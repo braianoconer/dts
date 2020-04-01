@@ -22,9 +22,14 @@ repositories {
 }
 
 dependencies {
+	compile 'io.prometheus:simpleclient:0.8.1'
+	compile 'io.prometheus:simpleclient_httpserver:0.8.1'
+	compile 'io.prometheus:simpleclient_hotspot:0.8.1'
 	implementation 'org.apache.kafka:kafka-clients:2.4.1'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'io.micrometer:micrometer-registry-prometheus'
+	implementation 'io.zipkin.brave:brave-instrumentation-kafka-clients:5.10.2'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}

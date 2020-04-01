@@ -2,40 +2,71 @@ package com.playground.springboot.common.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.Objects;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ProcessingBean {
 
-    private final String name;
-    private String message;
+    private String UUID;
 
-    public ProcessingBean(String name) {
-        this.name = name;
+    private long lightTimestamp;
+
+    private long mediumTimestamp;
+
+    private long heavyTimestamp;
+
+    public String getUUID() {
+        return UUID;
     }
 
-    public String getName() {
-        return name;
+    public void setUUID(String UUID) {
+        this.UUID = UUID;
     }
 
-    private void setMessage() {
-        message = "Oh this is sad, but farewell dear ";
+    public long getLightTimestamp() {
+        return lightTimestamp;
     }
 
-    private String getMessage() {
-        return message;
+    public void setLightTimestamp(long lightTimestamp) {
+        this.lightTimestamp = lightTimestamp;
+    }
+
+    public long getMediumTimestamp() {
+        return mediumTimestamp;
+    }
+
+    public void setMediumTimestamp(long mediumTimestamp) {
+        this.mediumTimestamp = mediumTimestamp;
+    }
+
+    public long getHeavyTimestamp() {
+        return heavyTimestamp;
+    }
+
+    public void setHeavyTimestamp(long heavyTimestamp) {
+        this.heavyTimestamp = heavyTimestamp;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProcessingBean that = (ProcessingBean) o;
+        return UUID.equals(that.UUID);
     }
 
     @Override
     public int hashCode() {
-        return super.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj);
+        return Objects.hash(UUID);
     }
 
     @Override
     public String toString() {
-        return message + name;
+        return "ProcessingBean{" +
+                "UUID='" + UUID + '\'' +
+                ", lightTimestamp=" + lightTimestamp +
+                ", mediumTimestamp=" + mediumTimestamp +
+                ", heavyTimestamp=" + heavyTimestamp +
+                '}';
     }
 }

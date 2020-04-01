@@ -1,29 +1,22 @@
-package com.playground.springboot.entry;
+package com.playground.springboot.initiator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 
-@SpringBootApplication(scanBasePackages = {"com.playground.springboot.entry", "com.playground.springboot.common"})
-public class EntryLauncher {
+@SpringBootApplication(scanBasePackages = {"com.playground.springboot.initiator", "com.playground.springboot.common"})
+public class InitiatorLauncher {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(EntryLauncher.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(InitiatorLauncher.class);
 
 	public static void main(String[] args) {
-		SpringApplication.run(EntryLauncher.class, args);
-	}
-
-	@Bean
-	public RestTemplate restTemplate(RestTemplateBuilder builder) {
-		return builder.build();
+		SpringApplication.run(InitiatorLauncher.class, args);
 	}
 
 	@Bean
