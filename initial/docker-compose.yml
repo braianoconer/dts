@@ -1,13 +1,14 @@
 version: '3.7'
+
+volumes:
+  prometheus_data: {}
+  grafana_data: {}
+
+networks:
+  observability:
+    driver: "bridge"
+
 services:
-  prometheus:
-    image: prom/prometheus
-    ports:
-      - "9000:9000"
-    volumes:
-      - /Users/user/dev/playground/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-    networks:
-      - observability
   initiator:
     image: observability/initiator
     expose:
@@ -16,6 +17,7 @@ services:
       - "8081:8081"
     networks:
       - observability
+
   translator:
     image: observability/translator
     expose:
@@ -24,6 +26,7 @@ services:
       - "8085:8085"
     networks:
       - observability
+
   lightProcessor:
     image: observability/light
     expose:
@@ -34,6 +37,7 @@ services:
       - "translator"
     networks:
       - observability
+
   mediumProcessor:
     image: observability/medium
     expose:
@@ -44,6 +48,7 @@ services:
       - "translator"
     networks:
       - observability
+
   heavyProcessor:
     image: observability/heavy
     expose:
@@ -55,6 +60,28 @@ services:
     networks:
       - observability
 
-networks:
-  observability:
-    driver: "bridge"
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9000:9000"
+    expose:
+      - 9090
+    volumes:
+      - /Users/user/dev/gs-spring-boot/initial/docker/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    restart: unless-stopped
+    networks:
+      - observability
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - /Users/user/dev/gs-spring-boot/initial/docker/grafana:/etc/grafana/provisioning
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - observability
