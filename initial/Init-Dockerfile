@@ -2,16 +2,6 @@
 FROM openjdk:8-jdk-alpine as build
 WORKDIR /workspace/app
 
-#COPY gradlew .
-#COPY gradle gradle
-#COPY .gradle .gradle
-#COPY build.gradle .
-#COPY settings.gradle .
-#COPY src src
-#
-#RUN ./gradlew build
-#RUN mkdir -p build/dependency && (cd build/dependency; jar -xf ../libs/*.jar)
-
 COPY . /workspace/app
 RUN --mount=type=cache,target=/root/.gradle ./gradlew clean build
 RUN mkdir -p build/dependency && (cd build/dependency; jar -xf ../libs/*.jar)

@@ -1,6 +1,6 @@
-package com.playground.springboot.common.config;
+package com.playground.springboot.common.kafka.config;
 
-import com.playground.springboot.common.model.KafkaTopicsBean;
+import com.playground.springboot.common.kafka.model.KafkaTopicsBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +21,6 @@ public class KafkaClientsConfig {
     private final String outTopic;
 
     private final KafkaClientConfigurationProperties properties;
-
 
     public KafkaClientsConfig(KafkaClientConfigurationProperties properties) {
         this.properties = properties;

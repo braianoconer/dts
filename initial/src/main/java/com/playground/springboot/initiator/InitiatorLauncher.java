@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 
 import java.util.Arrays;
 
-@SpringBootApplication(scanBasePackages = {"com.playground.springboot.initiator", "com.playground.springboot.common"})
+@SpringBootApplication(scanBasePackages = {"com.playground.springboot.initiator", "com.playground.springboot.common.kafka"})
 public class InitiatorLauncher {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(InitiatorLauncher.class);

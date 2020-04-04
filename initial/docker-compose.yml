@@ -1,43 +1,60 @@
 version: '3.7'
 services:
-  zookeeper:
-    image: wurstmeister/zookeeper
-    ports:
-      - "2181:2181"
-  kafka:
-    image: wurstmeister/kafka
-    command: [start-kafka.sh]
-    ports:
-      - "9092"
-    hostname: kafka
-    environment:
-      KAFKA_CREATE_TOPICS: "UploadFile:1:1,GetFile:1:1,TrackUpload:1:1,GetEmailContent:1:1" # topic:partition:replicas
-      KAFKA_ADVERTISED_HOST_NAME: kafka # docker-machine ip
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_PORT: 9092
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    depends_on:
-      - "zookeeper"
   prometheus:
     image: prom/prometheus
     ports:
       - "9000:9000"
     volumes:
       - /Users/user/dev/playground/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - observability
   initiator:
     image: observability/initiator
+    expose:
+      - "8081"
     ports:
       - "8081:8081"
+    networks:
+      - observability
+  translator:
+    image: observability/translator
+    expose:
+      - "8085"
+    ports:
+      - "8085:8085"
+    networks:
+      - observability
   lightProcessor:
     image: observability/light
+    expose:
+      - "8082"
     ports:
       - "8082:8082"
+    depends_on:
+      - "translator"
+    networks:
+      - observability
   mediumProcessor:
     image: observability/medium
+    expose:
+      - "8083"
     ports:
       - "8083:8083"
+    depends_on:
+      - "translator"
+    networks:
+      - observability
   heavyProcessor:
     image: observability/heavy
+    expose:
+      - "8084"
     ports:
       - "8084:8084"
+    depends_on:
+      - "translator"
+    networks:
+      - observability
+
+networks:
+  observability:
+    driver: "bridge"

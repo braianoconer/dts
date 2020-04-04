@@ -1,6 +1,6 @@
-package com.playground.springboot.common;
+package com.playground.springboot.common.kafka;
 
-import com.playground.springboot.common.model.KafkaTopicsBean;
+import com.playground.springboot.common.kafka.model.KafkaTopicsBean;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

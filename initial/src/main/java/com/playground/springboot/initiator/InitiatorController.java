@@ -1,6 +1,6 @@
 package com.playground.springboot.initiator;
 
-import com.playground.springboot.common.GenericKafkaPublisher;
+import com.playground.springboot.common.kafka.GenericKafkaPublisher;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import org.slf4j.Logger;
@@ -85,7 +85,7 @@ public class InitiatorController {
                         .forEach(i -> {
                             Instant start = Instant.now();
                             counter += i;
-                            publisher.publish(counter + " -> Initiated - ");
+                            publisher.publish("hello-");
                             Instant end = Instant.now();
                             timer.record(Duration.between(start, end));
                         });

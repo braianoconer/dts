@@ -1,4 +1,4 @@
-package com.playground.springboot.common.config;
+package com.playground.springboot.common.kafka.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

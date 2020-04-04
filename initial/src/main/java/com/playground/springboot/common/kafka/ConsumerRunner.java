@@ -1,9 +1,11 @@
-package com.playground.springboot.common;
+package com.playground.springboot.common.kafka;
 
+import com.playground.springboot.common.translator.TranslatorClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
 import java.util.function.Consumer;
@@ -14,14 +16,20 @@ public class ConsumerRunner implements Runnable {
 
     private final GenericKafkaConsumer kafkaConsumer;
 
-    private String label;
-
     private Consumer<String> sendingFunction;
 
-    public ConsumerRunner(GenericKafkaConsumer kafkaConsumer, String label, Consumer<String> sendingFunction) {
+    private final TranslatorClientConfig translatorClientConfig;
+
+    private final RestTemplate restTemplate;
+
+    public ConsumerRunner(GenericKafkaConsumer kafkaConsumer,
+                          Consumer<String> sendingFunction,
+                          TranslatorClientConfig translatorClientConfig,
+                          RestTemplate restTemplate) {
         this.kafkaConsumer = kafkaConsumer;
-        this.label = label;
         this.sendingFunction = sendingFunction;
+        this.translatorClientConfig = translatorClientConfig;
+        this.restTemplate = restTemplate;
     }
 
     @Override
@@ -35,7 +43,12 @@ public class ConsumerRunner implements Runnable {
                     LOGGER.debug("Consumer Record:(%d, %s, %d, %d)\n",
                             record.key(), record.value(),
                             record.partition(), record.offset());
-                    sendingFunction.accept(record.value() + " -"+label+"- ");
+
+                    String value = record.value();
+                    String word = value.substring(0, value.indexOf("-"));
+                    String uri = translatorClientConfig.getTranslatorAddress() + "?target=" + translatorClientConfig.getTargetLanguage() + "&word=" + word;
+                    String translation =restTemplate.getForObject(uri, String.class);
+                    sendingFunction.accept(value + translation + "-");
                 });
 
                 consumer.commitAsync();

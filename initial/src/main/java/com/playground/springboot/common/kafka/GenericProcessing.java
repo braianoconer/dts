@@ -1,4 +1,4 @@
-package com.playground.springboot.common;
+package com.playground.springboot.common.kafka;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;

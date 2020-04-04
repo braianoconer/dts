@@ -14,4 +14,4 @@ COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
 COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
 COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
 RUN echo "Dependency space set to ${DEPENDENCY}"
-CMD ["java","-cp","app:app/lib/*","-Dserver.port=8083","-Dspring.config.location=classpath:medium-application.properties","com.playground.springboot.medium.MediumProcessingLauncher"]
+CMD ["java","-cp","app:app/lib/*","-Dserver.port=8085","-Dspring.config.location=classpath:translator-application.properties","com.playground.springboot.translator.TranslatorLauncher"]
