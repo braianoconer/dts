@@ -45,7 +45,7 @@ public class ConsumerRunner implements Runnable {
                             record.partition(), record.offset());
 
                     String value = record.value();
-                    String word = value.substring(0, value.indexOf("-"));
+                    String word = extractWord(value);
                     String uri = translatorClientConfig.getTranslatorAddress() + "?target=" + translatorClientConfig.getTargetLanguage() + "&word=" + word;
                     String translation =restTemplate.getForObject(uri, String.class);
                     sendingFunction.accept(value + translation + "-");
@@ -56,5 +56,11 @@ public class ConsumerRunner implements Runnable {
         } finally {
             kafkaConsumer.getConsumer().close();
         }
+    }
+
+    private String extractWord(String input) {
+        int beginIdx = input.indexOf(":") + 1;
+        int endIdx = input.indexOf("-");
+        return input.substring(beginIdx, endIdx);
     }
 }

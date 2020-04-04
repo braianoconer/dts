@@ -85,7 +85,7 @@ public class InitiatorController {
                         .forEach(i -> {
                             Instant start = Instant.now();
                             counter += i;
-                            publisher.publish("hello-");
+                            publisher.publish(counter + ": hello-");
                             Instant end = Instant.now();
                             timer.record(Duration.between(start, end));
                         });
