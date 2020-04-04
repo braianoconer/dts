@@ -1,5 +1,6 @@
 package com.playground.springboot.initiator;
 
+import com.playground.springboot.common.InputWords;
 import com.playground.springboot.common.kafka.GenericKafkaPublisher;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
@@ -24,6 +27,8 @@ public class InitiatorController {
 	private static final long SLEEP_DELAY = 500;
 
     private AtomicBoolean keepSending = new AtomicBoolean(false);
+
+    private final Random rnd = new Random();
 
     private final ProducerRunner producerRunner;
 
@@ -73,6 +78,8 @@ public class InitiatorController {
 
         private AtomicInteger batchSize = new AtomicInteger(100);
 
+        private final List<String> inputs = InputWords.getEnglishWords();
+
         public ProducerRunner(GenericKafkaPublisher publisher, Timer timer) {
             this.publisher = publisher;
             this.timer = timer;
@@ -85,7 +92,7 @@ public class InitiatorController {
                         .forEach(i -> {
                             Instant start = Instant.now();
                             counter += i;
-                            publisher.publish(counter + ": hello-");
+                            publisher.publish(counter + ": " + getRandomInput() + "-");
                             Instant end = Instant.now();
                             timer.record(Duration.between(start, end));
                         });
@@ -99,6 +106,10 @@ public class InitiatorController {
 
         public void setBatchSize(int batchSize) {
             this.batchSize.getAndSet(batchSize);
+        }
+
+        private String getRandomInput() {
+            return inputs.get(rnd.nextInt() % (inputs.size() - 1));
         }
     }
 
