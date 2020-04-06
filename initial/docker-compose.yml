@@ -3,6 +3,8 @@ version: '3.7'
 volumes:
   prometheus_data: {}
   grafana_data: {}
+  data01:
+    driver: local
 
 networks:
   observability:
@@ -33,10 +35,42 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - "zookeeper"
+    networks:
+      - observability
+
+  elastic:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.6.2
+    container_name: elastic01
+    environment:
+      - node.name=elastic01
+      - cluster.name=es-docker-cluster
+      - cluster.initial_master_nodes=elastic01
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - data01:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - observability
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.6.2
+    container_name: kibana01
+    ports:
+      - 5601:5601
+    environment:
+      ELASTICSEARCH_URL: http://elastic01:9200
+      ELASTICSEARCH_HOSTS: http://elastic01:9200
     networks:
       - observability
 
@@ -129,7 +163,7 @@ services:
       kafka.value.serializer: ${KAFKA_VALUE_SERIALIZER}
       kafka.key.deserializer: ${KAFKA_KEY_DESERIALIZER}
       kafka.value.deserializer: ${KAFKA_VALUE_DESERIALIZER}
-      kafka.consumer.group.id: heavy
+      kafka.consumer.group.id: heavyz§
       kafka.acks: ${KAFKA_ACKS}
       translator.url: http://translator:8085/translate
       translator.target: DE
