@@ -14,4 +14,4 @@ COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
 COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
 COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
 RUN echo "Dependency space set to ${DEPENDENCY}"
-CMD ["java","-cp","app:app/lib/*","-Dserver.port=8084","-Dspring.config.location=classpath:heavy-application.properties","com.playground.springboot.heavy.HeavyProcessingLauncher"]
+CMD ["java","-cp","app:app/lib/*","-Dspring.config.location=classpath:heavy-application.properties","com.playground.springboot.heavy.HeavyProcessingLauncher"]

@@ -92,7 +92,7 @@ public class InitiatorController {
                         .forEach(i -> {
                             Instant start = Instant.now();
                             counter += i;
-                            publisher.publish(counter + ": " + getRandomInput() + "-");
+                            publisher.publish(counter + ":" + getRandomInput() + "-");
                             Instant end = Instant.now();
                             timer.record(Duration.between(start, end));
                         });
@@ -109,7 +109,7 @@ public class InitiatorController {
         }
 
         private String getRandomInput() {
-            return inputs.get(rnd.nextInt() % (inputs.size() - 1));
+            return inputs.get(Math.abs(rnd.nextInt()) % (inputs.size() - 1));
         }
     }
 

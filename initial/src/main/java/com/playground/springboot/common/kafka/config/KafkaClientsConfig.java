@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
-import java.net.UnknownHostException;
 import java.util.Properties;
 
 import static org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG;
@@ -30,7 +29,7 @@ public class KafkaClientsConfig {
 
     @Bean
     @Primary
-    public Properties getKafkaProperties() throws UnknownHostException {
+    public Properties getKafkaProperties() {
         Properties config = new Properties();
         config.put(CLIENT_ID_CONFIG, properties.getClientId());
         config.put(BOOTSTRAP_SERVERS_CONFIG, properties.getBootstrapServers());

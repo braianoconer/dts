@@ -1,24 +1,33 @@
 package com.playground.springboot.common.kafka.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix="kafka")
 public class KafkaClientConfigurationProperties {
 
+    @Value("${kafka.client.id}")
     private String clientId;
 
+    @Value("${kafka.bootstrap.servers}")
     private String bootstrapServers;
 
+    @Value("${kafka.key.serializer}")
     private String keySerializer;
 
+    @Value("${kafka.value.serializer}")
     private String valueSerializer;
 
+    @Value("${kafka.key.deserializer}")
     private String keyDeserializer;
 
+    @Value("${kafka.key.deserializer}")
     private String valueDeserializer;
 
+    @Value("${kafka.acks}")
     private String acks;
 
+    @Value("${kafka.consumer.group.id}")
     private String consumerGroupId;
 
     public String getClientId() {
