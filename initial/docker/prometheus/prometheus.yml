@@ -6,7 +6,7 @@ scrape_configs:
   - job_name: 'observability'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['initiator:8081','lightProcessor:8082','mediumProcessor:8083','heavyProcessor:8084','translator:8085']
+      - targets: ['initiator:8091','lightProcessor:8082','mediumProcessor:8083','heavyProcessor:8084','translator:8085']
 
   - job_name: 'prometheus'
     static_configs:

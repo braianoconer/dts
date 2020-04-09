@@ -9,7 +9,7 @@ filebeat.autodiscover:
             - type: docker
               containers.ids:
                 - "${data.docker.container.id}"
-              exclude_lines: ["^\\s+[\\-`('.|_]"]  # drop asciiart lines
+              exclude_lines: ["^\\s+[\\-`('.|_]"]
 
 filebeat.inputs:
   - type: docker
