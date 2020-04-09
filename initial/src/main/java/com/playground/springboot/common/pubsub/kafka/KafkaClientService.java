@@ -1,4 +1,4 @@
-package com.playground.springboot.common.kafka;
+package com.playground.springboot.common.pubsub.kafka;
 
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;

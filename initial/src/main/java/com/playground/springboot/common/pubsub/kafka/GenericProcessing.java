@@ -1,5 +1,6 @@
-package com.playground.springboot.common.kafka;
+package com.playground.springboot.common.pubsub.kafka;
 
+import com.playground.springboot.common.pubsub.Publisher;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import org.slf4j.Logger;
@@ -17,14 +18,14 @@ public abstract class GenericProcessing {
 
     protected final Timer timer;
 
-    private final GenericKafkaPublisher kafkaPublisher;
+    private final Publisher<Long, String> publisher;
 
     private final GenericKafkaConsumer kafkaConsumer;
 
     private final long maxDelayMillis;
 
-    public GenericProcessing(GenericKafkaPublisher kafkaPublisher, GenericKafkaConsumer kafkaConsumer, long maxDelayMillis, Timer.Builder timer, MeterRegistry registry) {
-        this.kafkaPublisher = kafkaPublisher;
+    public GenericProcessing(Publisher<Long, String> publisher, GenericKafkaConsumer kafkaConsumer, long maxDelayMillis, Timer.Builder timer, MeterRegistry registry) {
+        this.publisher = publisher;
         this.kafkaConsumer = kafkaConsumer;
         this.maxDelayMillis = maxDelayMillis;
         this.timer = timer.register(registry);
@@ -34,7 +35,7 @@ public abstract class GenericProcessing {
         Instant start = Instant.now();
         try {
             Thread.sleep(Math.abs(rnd.nextLong()) % maxDelayMillis);
-            kafkaPublisher.publish(value);
+            publisher.publish(value);
         } catch (InterruptedException e) {
             LOGGER.error(e.getMessage());
         } finally {

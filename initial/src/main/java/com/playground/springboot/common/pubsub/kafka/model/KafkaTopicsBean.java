@@ -1,4 +1,4 @@
-package com.playground.springboot.common.kafka.model;
+package com.playground.springboot.common.pubsub.kafka.model;
 
 public class KafkaTopicsBean {
 

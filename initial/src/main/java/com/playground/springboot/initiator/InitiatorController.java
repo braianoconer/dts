@@ -1,7 +1,7 @@
 package com.playground.springboot.initiator;
 
 import com.playground.springboot.common.InputWords;
-import com.playground.springboot.common.kafka.GenericKafkaPublisher;
+import com.playground.springboot.common.pubsub.Publisher;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import org.slf4j.Logger;
@@ -40,7 +40,7 @@ public class InitiatorController {
             .maximumExpectedValue(Duration.ofMillis(SLEEP_DELAY + 100));
 
 	@Autowired
-    public InitiatorController(GenericKafkaPublisher publisher, MeterRegistry registry) {
+    public InitiatorController(Publisher<Long, String> publisher, MeterRegistry registry) {
 	    this.producerRunner = new ProducerRunner(publisher, timer.register(registry));
     }
 
@@ -70,7 +70,7 @@ public class InitiatorController {
 
     private class ProducerRunner implements Runnable {
 
-        private final GenericKafkaPublisher publisher;
+        private final Publisher<Long, String> publisher;
 
         private final Timer timer;
 
@@ -80,7 +80,7 @@ public class InitiatorController {
 
         private final List<String> inputs = InputWords.getEnglishWords();
 
-        public ProducerRunner(GenericKafkaPublisher publisher, Timer timer) {
+        public ProducerRunner(Publisher<Long, String> publisher, Timer timer) {
             this.publisher = publisher;
             this.timer = timer;
         }

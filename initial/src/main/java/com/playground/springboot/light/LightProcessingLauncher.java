@@ -1,5 +1,7 @@
 package com.playground.springboot.light;
 
+import brave.http.HttpTracing;
+import brave.spring.web.TracingClientHttpRequestInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -22,8 +24,10 @@ public class LightProcessingLauncher {
     }
 
     @Bean
-    public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        return builder.build();
+    public RestTemplate restTemplate(RestTemplateBuilder builder, HttpTracing tracing) {
+        return builder
+                .additionalInterceptors(TracingClientHttpRequestInterceptor.create(tracing))
+                .build();
     }
 
     @Bean

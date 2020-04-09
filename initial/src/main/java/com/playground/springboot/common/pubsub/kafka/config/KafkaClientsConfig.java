@@ -1,6 +1,7 @@
-package com.playground.springboot.common.kafka.config;
+package com.playground.springboot.common.pubsub.kafka.config;
 
-import com.playground.springboot.common.kafka.model.KafkaTopicsBean;
+import com.playground.springboot.common.pubsub.kafka.model.KafkaTopicsBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,13 +15,14 @@ import static org.apache.kafka.clients.producer.ProducerConfig.*;
 
 @Configuration
 @EnableConfigurationProperties(KafkaClientConfigurationProperties.class)
-public class KafkaClientsConfig {
+public abstract class KafkaClientsConfig {
 
     private final String inTopic;
     private final String outTopic;
 
-    private final KafkaClientConfigurationProperties properties;
+    protected final KafkaClientConfigurationProperties properties;
 
+    @Autowired
     public KafkaClientsConfig(KafkaClientConfigurationProperties properties) {
         this.properties = properties;
         this.inTopic = properties.getTopics().getInput();
@@ -38,10 +40,11 @@ public class KafkaClientsConfig {
         config.put(KEY_DESERIALIZER_CLASS_CONFIG, properties.getKeyDeserializer());
         config.put(VALUE_DESERIALIZER_CLASS_CONFIG, properties.getValueDeserializer());
         config.put("acks", properties.getAcks());
-        config.put("group.id", properties.getConsumerGroupId());
 
-        return config;
+        return fillAdditionalProperties(config);
     }
+
+    public abstract Properties fillAdditionalProperties(Properties props);
 
     @Bean
     public KafkaTopicsBean getTopics() {

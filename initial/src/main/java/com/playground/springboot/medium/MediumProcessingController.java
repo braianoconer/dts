@@ -1,15 +1,13 @@
 package com.playground.springboot.medium;
 
-import com.playground.springboot.common.kafka.ConsumerRunner;
-import com.playground.springboot.common.kafka.GenericKafkaConsumer;
-import com.playground.springboot.common.kafka.GenericKafkaPublisher;
-import com.playground.springboot.common.kafka.GenericProcessing;
+import com.playground.springboot.common.pubsub.kafka.ConsumerRunner;
+import com.playground.springboot.common.pubsub.kafka.GenericKafkaConsumer;
+import com.playground.springboot.common.pubsub.kafka.GenericKafkaPublisher;
+import com.playground.springboot.common.pubsub.kafka.GenericProcessing;
 import com.playground.springboot.common.translator.TranslatorClientConfig;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 

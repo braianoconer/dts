@@ -33,7 +33,11 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'io.micrometer:micrometer-registry-prometheus'
-	implementation 'io.zipkin.brave:brave-instrumentation-kafka-clients:5.10.2'
+	implementation 'io.zipkin.reporter2:zipkin-sender-okhttp3:2.12.2'
+	implementation 'io.zipkin.brave:brave-instrumentation-kafka-clients:5.11.2'
+	implementation 'io.zipkin.brave:brave-instrumentation-spring-web:5.11.2'
+	implementation 'io.zipkin.brave:brave-instrumentation-okhttp3:5.11.2'
+	implementation 'io.zipkin.brave:brave-context-slf4j:5.11.2'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}

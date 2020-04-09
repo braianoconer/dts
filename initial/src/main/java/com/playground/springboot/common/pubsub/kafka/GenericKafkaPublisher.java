@@ -1,16 +1,16 @@
-package com.playground.springboot.common.kafka;
+package com.playground.springboot.common.pubsub.kafka;
 
-import com.playground.springboot.common.kafka.model.KafkaTopicsBean;
+import com.playground.springboot.common.pubsub.Publisher;
+import com.playground.springboot.common.pubsub.kafka.model.KafkaTopicsBean;
 import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GenericKafkaPublisher {
+public class GenericKafkaPublisher implements Publisher<Long, String> {
 
-    private final Producer<Long, String> kafkaProducer;
+    private final KafkaProducer<Long, String> kafkaProducer;
 
     private final KafkaTopicsBean topics;
 
@@ -22,7 +22,8 @@ public class GenericKafkaPublisher {
         this.topics = topics;
     }
 
-    public long publish(String name) {
+    @Override
+    public Long publish(String name) {
         long key = counter++;
         final ProducerRecord<Long, String> record = new ProducerRecord<>(topics.getOutTopic(), key, name);
         kafkaProducer.send(record);

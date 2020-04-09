@@ -91,110 +91,15 @@ services:
     networks:
       - observability
 
-  translator:
-    image: observability/translator
-    expose:
-      - "8085"
-    ports:
-      - "8085:8085"
+  zipkin:
+    image: openzipkin/zipkin
     environment:
-      SERVER_PORT: 8085
-    depends_on:
-      - filebeat
-    networks:
-      - observability
-
-  initiator:
-    image: observability/initiator
-    expose:
-      - "8091"
+      STORAGE_TYPE: mem
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
-      - "8091:8091"
-    environment:
-      kafka.client.id: initiator
-      kafka.bootstrap.servers: ${KAFKA_BOOTSTRAP_SERVERS}
-      kafka.key.serializer: ${KAFKA_KEY_SERIALIZER}
-      kafka.value.serializer: ${KAFKA_VALUE_SERIALIZER}
-      kafka.key.deserializer: ${KAFKA_KEY_DESERIALIZER}
-      kafka.value.deserializer: ${KAFKA_VALUE_DESERIALIZER}
-      kafka.consumer.group.id: nonUsed
-      kafka.acks: ${KAFKA_ACKS}
+      - 9411:9411
     depends_on:
-      - filebeat
-    networks:
-      - observability
-
-  lightProcessor:
-    image: observability/light
-    expose:
-      - "8082"
-    ports:
-      - "8082:8082"
-    environment:
-      SERVER_PORT: 8082
-      kafka.client.id: light
-      kafka.bootstrap.servers: ${KAFKA_BOOTSTRAP_SERVERS}
-      kafka.key.serializer: ${KAFKA_KEY_SERIALIZER}
-      kafka.value.serializer: ${KAFKA_VALUE_SERIALIZER}
-      kafka.key.deserializer: ${KAFKA_KEY_DESERIALIZER}
-      kafka.value.deserializer: ${KAFKA_VALUE_DESERIALIZER}
-      kafka.consumer.group.id: light
-      kafka.acks: ${KAFKA_ACKS}
-      translator.url: http://translator:8085/translate
-      translator.target: ES
-    depends_on:
-      - translator
-      - filebeat
-    networks:
-      - observability
-
-  mediumProcessor:
-    image: observability/medium
-    expose:
-      - "8083"
-    ports:
-      - "8083:8083"
-    environment:
-      SERVER_PORT: 8083
-      kafka.client.id: medium
-      kafka.bootstrap.servers: ${KAFKA_BOOTSTRAP_SERVERS}
-      kafka.key.serializer: ${KAFKA_KEY_SERIALIZER}
-      kafka.value.serializer: ${KAFKA_VALUE_SERIALIZER}
-      kafka.key.deserializer: ${KAFKA_KEY_DESERIALIZER}
-      kafka.value.deserializer: ${KAFKA_VALUE_DESERIALIZER}
-      kafka.consumer.group.id: medium
-      kafka.acks: ${KAFKA_ACKS}
-      translator.url: http://translator:8085/translate
-      translator.target: IT
-    depends_on:
-      - translator
-      - filebeat
-    networks:
-      - observability
-
-  heavyProcessor:
-    image: observability/heavy
-    expose:
-      - "8084"
-    ports:
-      - "8084:8084"
-    environment:
-      SERVER_PORT: 8084
-      kafka.client.id: heavy
-      kafka.bootstrap.servers: ${KAFKA_BOOTSTRAP_SERVERS}
-      kafka.key.serializer: ${KAFKA_KEY_SERIALIZER}
-      kafka.value.serializer: ${KAFKA_VALUE_SERIALIZER}
-      kafka.key.deserializer: ${KAFKA_KEY_DESERIALIZER}
-      kafka.value.deserializer: ${KAFKA_VALUE_DESERIALIZER}
-      kafka.consumer.group.id: heavyz§
-      kafka.acks: ${KAFKA_ACKS}
-      translator.url: http://translator:8085/translate
-      translator.target: DE
-    depends_on:
-      - translator
-      - filebeat
-    networks:
-      - observability
+      - kafka
 
   prometheus:
     image: prom/prometheus
@@ -219,5 +124,124 @@ services:
     restart: unless-stopped
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - observability
+
+  translator:
+    image: observability/translator
+    expose:
+      - "8085"
+    ports:
+      - "8085:8085"
+    environment:
+      SERVER_PORT: 8085
+    depends_on:
+      - filebeat
+      - zipkin
+    networks:
+      - observability
+
+  initiator:
+    image: observability/initiator
+    expose:
+      - "8091"
+    ports:
+      - "8091:8091"
+    environment:
+      kafka.client.id: initiator
+      kafka.bootstrap.servers: ${KAFKA_BOOTSTRAP_SERVERS}
+      kafka.key.serializer: ${KAFKA_KEY_SERIALIZER}
+      kafka.value.serializer: ${KAFKA_VALUE_SERIALIZER}
+      kafka.key.deserializer: ${KAFKA_KEY_DESERIALIZER}
+      kafka.value.deserializer: ${KAFKA_VALUE_DESERIALIZER}
+      kafka.zipkin.sender.type: ${KAFKA_PRODUCER_ZIPKIN_SENDER_TYPE}
+      kafka.zipkin.http.endpoint: ${KAFKA_PRODUCER_ZIPKIN_HTTP_ENDPOINT}
+      kafka.zipkin.local.service.name: initiator
+      kafka.consumer.group.id: notUsed
+      kafka.acks: ${KAFKA_ACKS}
+    depends_on:
+      - filebeat
+      - zipkin
+    networks:
+      - observability
+
+  spanishProcessor:
+    image: observability/light
+    expose:
+      - "8082"
+    ports:
+      - "8082:8082"
+    environment:
+      SERVER_PORT: 8082
+      kafka.client.id: light
+      kafka.bootstrap.servers: ${KAFKA_BOOTSTRAP_SERVERS}
+      kafka.key.serializer: ${KAFKA_KEY_SERIALIZER}
+      kafka.value.serializer: ${KAFKA_VALUE_SERIALIZER}
+      kafka.key.deserializer: ${KAFKA_KEY_DESERIALIZER}
+      kafka.value.deserializer: ${KAFKA_VALUE_DESERIALIZER}
+      kafka.consumer.group.id: spanish
+      kafka.acks: ${KAFKA_ACKS}
+      zipkin.sender.http.url: ${KAFKA_PRODUCER_ZIPKIN_SENDER_TYPE}
+      zipkin.service.name: SpanishProcessor
+      translator.url: ${TRANSLATOR_URL}
+      translator.target: ES
+    depends_on:
+      - translator
+      - filebeat
+      - zipkin
+    networks:
+      - observability
+
+  italianProcessor:
+    image: observability/medium
+    expose:
+      - "8083"
+    ports:
+      - "8083:8083"
+    environment:
+      SERVER_PORT: 8083
+      kafka.client.id: medium
+      kafka.bootstrap.servers: ${KAFKA_BOOTSTRAP_SERVERS}
+      kafka.key.serializer: ${KAFKA_KEY_SERIALIZER}
+      kafka.value.serializer: ${KAFKA_VALUE_SERIALIZER}
+      kafka.key.deserializer: ${KAFKA_KEY_DESERIALIZER}
+      kafka.value.deserializer: ${KAFKA_VALUE_DESERIALIZER}
+      kafka.consumer.group.id: italian
+      kafka.acks: ${KAFKA_ACKS}
+      zipkin.sender.http.url: ${KAFKA_PRODUCER_ZIPKIN_SENDER_TYPE}
+      zipkin.service.name: ItalianProcessor
+      translator.url: ${TRANSLATOR_URL}
+      translator.target: IT
+    depends_on:
+      - translator
+      - filebeat
+      - zipkin
+    networks:
+      - observability
+
+  heavyProcessor:
+    image: observability/heavy
+    expose:
+      - "8084"
+    ports:
+      - "8084:8084"
+    environment:
+      SERVER_PORT: 8084
+      kafka.client.id: heavy
+      kafka.bootstrap.servers: ${KAFKA_BOOTSTRAP_SERVERS}
+      kafka.key.serializer: ${KAFKA_KEY_SERIALIZER}
+      kafka.value.serializer: ${KAFKA_VALUE_SERIALIZER}
+      kafka.key.deserializer: ${KAFKA_KEY_DESERIALIZER}
+      kafka.value.deserializer: ${KAFKA_VALUE_DESERIALIZER}
+      kafka.consumer.group.id: german
+      kafka.acks: ${KAFKA_ACKS}
+      zipkin.sender.http.url: ${KAFKA_PRODUCER_ZIPKIN_SENDER_TYPE}
+      zipkin.service.name: GermanProcessor
+      translator.url: ${TRANSLATOR_URL}
+      translator.target: DE
+    depends_on:
+      - translator
+      - filebeat
+      - zipkin
     networks:
       - observability

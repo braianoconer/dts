@@ -1,9 +1,9 @@
 package com.playground.springboot.light;
 
-import com.playground.springboot.common.kafka.ConsumerRunner;
-import com.playground.springboot.common.kafka.GenericKafkaConsumer;
-import com.playground.springboot.common.kafka.GenericKafkaPublisher;
-import com.playground.springboot.common.kafka.GenericProcessing;
+import com.playground.springboot.common.pubsub.Publisher;
+import com.playground.springboot.common.pubsub.kafka.ConsumerRunner;
+import com.playground.springboot.common.pubsub.kafka.GenericKafkaConsumer;
+import com.playground.springboot.common.pubsub.kafka.GenericProcessing;
 import com.playground.springboot.common.translator.TranslatorClientConfig;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
@@ -30,12 +30,12 @@ public class LightProcessingController extends GenericProcessing {
             .maximumExpectedValue(Duration.ofMillis(MAX_DELAY_MILLIS + 100));
 
     @Autowired
-    public LightProcessingController(GenericKafkaPublisher kafkaPublisher,
+    public LightProcessingController(Publisher<Long, String> publisher,
                                      GenericKafkaConsumer kafkaConsumer,
                                      MeterRegistry registry,
                                      TranslatorClientConfig translatorClientConfig,
                                      RestTemplate restTemplate) {
-        super(kafkaPublisher, kafkaConsumer, MAX_DELAY_MILLIS, timer, registry);
+        super(publisher, kafkaConsumer, MAX_DELAY_MILLIS, timer, registry);
         this.restTemplate = restTemplate;
         this.translatorClientConfig = translatorClientConfig;
         Thread consumerThread = new Thread(new ConsumerRunner(kafkaConsumer, this::send, translatorClientConfig, restTemplate));

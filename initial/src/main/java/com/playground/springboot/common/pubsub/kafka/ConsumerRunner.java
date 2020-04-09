@@ -1,4 +1,4 @@
-package com.playground.springboot.common.kafka;
+package com.playground.springboot.common.pubsub.kafka;
 
 import com.playground.springboot.common.translator.TranslatorClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;

@@ -1,4 +1,4 @@
-package com.playground.springboot.common.kafka.config;
+package com.playground.springboot.common.pubsub.kafka.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -24,11 +24,11 @@ public class KafkaClientConfigurationProperties {
     @Value("${kafka.key.deserializer}")
     private String valueDeserializer;
 
-    @Value("${kafka.acks}")
-    private String acks;
-
     @Value("${kafka.consumer.group.id}")
     private String consumerGroupId;
+
+    @Value("${kafka.acks}")
+    private String acks;
 
     public String getClientId() {
         return clientId;
