@@ -3908,8 +3908,8 @@
         "allFormat": "glob",
         "allValue": null,
         "current": {
-          "text": "heavyProcessor:8084",
-          "value": "heavyProcessor:8084"
+          "text": "germanProcessor:8084",
+          "value": "germanProcessor:8084"
         },
         "datasource": "Prometheus",
         "definition": "",

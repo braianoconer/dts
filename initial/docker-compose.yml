@@ -3,8 +3,10 @@ version: '3.7'
 volumes:
   prometheus_data: {}
   grafana_data: {}
-  data01:
+  zookeeper_data:
     driver: local
+    kafka_data:
+      driver: local
 
 networks:
   observability:
@@ -12,34 +14,32 @@ networks:
 
 services:
   zookeeper:
-    image: wurstmeister/zookeeper
+    image: 'bitnami/zookeeper:3'
     ports:
-      - "2181:2181"
+      - '2181:2181'
+    volumes:
+      - 'zookeeper_data:/bitnami'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
     networks:
       - observability
-
+      
   kafka:
-    image: wurstmeister/kafka
-    command: [start-kafka.sh]
+    image: 'bitnami/kafka:2'
     ports:
-      - "9092:9092"
-    hostname: kafka
-    environment:
-      KAFKA_CREATE_TOPICS: "init:1:1,light:1:1,medium:1:1,heavy:1:1"
-      KAFKA_ADVERTISED_HOST_NAME: kafka
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_PORT: 9092
-      ALLOW_PLAINTEXT_LISTENER: "yes"
-      KAFKA_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://${DOCKER_HOST_IP:-127.0.0.1}:9092
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://${DOCKER_HOST_IP:-127.0.0.1}:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
+      - '9092:9092'
+      - '29092:29092'
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - 'kafka_data:/bitnami'
+    environment:
+      - KAFKA_CREATE_TOPICS="english:1:1,spanish:1:1,italian:1:1,german:1:1"
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:29092,PLAINTEXT_HOST://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
     depends_on:
-      - "zookeeper"
+      - zookeeper
     networks:
       - observability
 
@@ -95,11 +95,8 @@ services:
     image: openzipkin/zipkin
     environment:
       STORAGE_TYPE: mem
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
       - 9411:9411
-    depends_on:
-      - kafka
 
   prometheus:
     image: prom/prometheus
@@ -141,39 +138,40 @@ services:
     networks:
       - observability
 
-  initiator:
-    image: observability/initiator
+  english:
+    image: observability/english
     expose:
       - "8091"
     ports:
       - "8091:8091"
     environment:
-      kafka.client.id: initiator
+      SERVER_PORT: 8091
+      kafka.client.id: english
       kafka.bootstrap.servers: ${KAFKA_BOOTSTRAP_SERVERS}
       kafka.key.serializer: ${KAFKA_KEY_SERIALIZER}
       kafka.value.serializer: ${KAFKA_VALUE_SERIALIZER}
       kafka.key.deserializer: ${KAFKA_KEY_DESERIALIZER}
       kafka.value.deserializer: ${KAFKA_VALUE_DESERIALIZER}
-      kafka.zipkin.sender.type: ${KAFKA_PRODUCER_ZIPKIN_SENDER_TYPE}
-      kafka.zipkin.http.endpoint: ${KAFKA_PRODUCER_ZIPKIN_HTTP_ENDPOINT}
-      kafka.zipkin.local.service.name: initiator
+      zipkin.sender.http.url: ${KAFKA_PRODUCER_ZIPKIN_HTTP_ENDPOINT}
+      zipkin.service.name: EnglishInitiator
       kafka.consumer.group.id: notUsed
       kafka.acks: ${KAFKA_ACKS}
     depends_on:
+      - kafka
       - filebeat
       - zipkin
     networks:
       - observability
 
   spanishProcessor:
-    image: observability/light
+    image: observability/spanish
     expose:
       - "8082"
     ports:
       - "8082:8082"
     environment:
       SERVER_PORT: 8082
-      kafka.client.id: light
+      kafka.client.id: spanish
       kafka.bootstrap.servers: ${KAFKA_BOOTSTRAP_SERVERS}
       kafka.key.serializer: ${KAFKA_KEY_SERIALIZER}
       kafka.value.serializer: ${KAFKA_VALUE_SERIALIZER}
@@ -181,26 +179,27 @@ services:
       kafka.value.deserializer: ${KAFKA_VALUE_DESERIALIZER}
       kafka.consumer.group.id: spanish
       kafka.acks: ${KAFKA_ACKS}
-      zipkin.sender.http.url: ${KAFKA_PRODUCER_ZIPKIN_SENDER_TYPE}
+      zipkin.sender.http.url: ${KAFKA_PRODUCER_ZIPKIN_HTTP_ENDPOINT}
       zipkin.service.name: SpanishProcessor
       translator.url: ${TRANSLATOR_URL}
       translator.target: ES
     depends_on:
-      - translator
+      - kafka
       - filebeat
       - zipkin
+      - translator
     networks:
       - observability
 
   italianProcessor:
-    image: observability/medium
+    image: observability/italian
     expose:
       - "8083"
     ports:
       - "8083:8083"
     environment:
       SERVER_PORT: 8083
-      kafka.client.id: medium
+      kafka.client.id: italian
       kafka.bootstrap.servers: ${KAFKA_BOOTSTRAP_SERVERS}
       kafka.key.serializer: ${KAFKA_KEY_SERIALIZER}
       kafka.value.serializer: ${KAFKA_VALUE_SERIALIZER}
@@ -208,26 +207,27 @@ services:
       kafka.value.deserializer: ${KAFKA_VALUE_DESERIALIZER}
       kafka.consumer.group.id: italian
       kafka.acks: ${KAFKA_ACKS}
-      zipkin.sender.http.url: ${KAFKA_PRODUCER_ZIPKIN_SENDER_TYPE}
+      zipkin.sender.http.url: ${KAFKA_PRODUCER_ZIPKIN_HTTP_ENDPOINT}
       zipkin.service.name: ItalianProcessor
       translator.url: ${TRANSLATOR_URL}
       translator.target: IT
     depends_on:
-      - translator
+      - kafka
       - filebeat
       - zipkin
+      - translator
     networks:
       - observability
 
-  heavyProcessor:
-    image: observability/heavy
+  germanProcessor:
+    image: observability/german
     expose:
       - "8084"
     ports:
       - "8084:8084"
     environment:
       SERVER_PORT: 8084
-      kafka.client.id: heavy
+      kafka.client.id: german
       kafka.bootstrap.servers: ${KAFKA_BOOTSTRAP_SERVERS}
       kafka.key.serializer: ${KAFKA_KEY_SERIALIZER}
       kafka.value.serializer: ${KAFKA_VALUE_SERIALIZER}
@@ -235,13 +235,14 @@ services:
       kafka.value.deserializer: ${KAFKA_VALUE_DESERIALIZER}
       kafka.consumer.group.id: german
       kafka.acks: ${KAFKA_ACKS}
-      zipkin.sender.http.url: ${KAFKA_PRODUCER_ZIPKIN_SENDER_TYPE}
+      zipkin.sender.http.url: ${KAFKA_PRODUCER_ZIPKIN_HTTP_ENDPOINT}
       zipkin.service.name: GermanProcessor
       translator.url: ${TRANSLATOR_URL}
       translator.target: DE
     depends_on:
-      - translator
+      - kafka
       - filebeat
       - zipkin
+      - translator
     networks:
       - observability
