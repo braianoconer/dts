@@ -7,12 +7,12 @@ import brave.baggage.BaggagePropagationConfig;
 import brave.baggage.CorrelationScopeConfig;
 import brave.context.slf4j.MDCScopeDecorator;
 import brave.http.HttpTracing;
+import brave.kafka.clients.KafkaTracing;
 import brave.propagation.B3Propagation;
 import brave.propagation.CurrentTraceContext;
 import brave.propagation.Propagation;
 import brave.propagation.ThreadLocalCurrentTraceContext;
 import brave.sampler.Sampler;
-import com.playground.observability.english.EnglishLauncher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -59,6 +59,14 @@ public class TracingConfiguration {
     @Bean
     HttpTracing httpTracing(Tracing tracing) {
         return HttpTracing.create(tracing);
+    }
+
+    @Bean
+    KafkaTracing kafkaTracing(Tracing tracing) {
+        return KafkaTracing.newBuilder(tracing)
+                .remoteServiceName("my-broker")
+                .singleRootSpanOnReceiveBatch(true)
+                .build();
     }
 
     private Propagation.Factory propagationFactory() {

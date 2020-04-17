@@ -2,7 +2,6 @@ package com.playground.observability.common.pubsub.kafka;
 
 import com.playground.observability.common.translator.TranslatorClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestTemplate;
@@ -35,7 +34,7 @@ public class ConsumerRunner implements Runnable {
     @Override
     public void run() {
         try {
-            KafkaConsumer<Long, String> consumer = kafkaConsumer.getConsumer();
+            org.apache.kafka.clients.consumer.Consumer<Long, String> consumer = kafkaConsumer.getConsumer();
             while (true) {
                 final ConsumerRecords<Long, String> consumerRecords = consumer.poll(Duration.ofMillis(500));
 

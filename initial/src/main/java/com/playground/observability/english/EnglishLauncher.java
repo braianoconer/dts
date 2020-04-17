@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication(scanBasePackages = {"com.playground.observability.english", "com.playground.observability.common.pubsub"})
+@SpringBootApplication(scanBasePackages = {"com.playground.observability.english", "com.playground.observability.common.pubsub", "com.playground.observability.common.tracing"})
 public class EnglishLauncher {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EnglishLauncher.class);
