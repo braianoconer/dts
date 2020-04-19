@@ -1,6 +1,7 @@
 package com.playground.observability.common.pubsub.kafka;
 
-import com.playground.observability.common.pubsub.Publisher;
+import com.playground.observability.common.pubsub.MsgConsumer;
+import com.playground.observability.common.pubsub.MsgPublisher;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import org.slf4j.Logger;
@@ -18,15 +19,15 @@ public abstract class GenericProcessing {
 
     protected final Timer timer;
 
-    private final Publisher<Long, String> publisher;
+    private final MsgPublisher<Long, String> publisher;
 
-    private final GenericKafkaConsumer kafkaConsumer;
+    private final MsgConsumer<Long, String> msgConsumer;
 
     private final long maxDelayMillis;
 
-    public GenericProcessing(Publisher<Long, String> publisher, GenericKafkaConsumer kafkaConsumer, long maxDelayMillis, Timer.Builder timer, MeterRegistry registry) {
+    public GenericProcessing(MsgPublisher<Long, String> publisher, MsgConsumer<Long, String> msgConsumer, long maxDelayMillis, Timer.Builder timer, MeterRegistry registry) {
         this.publisher = publisher;
-        this.kafkaConsumer = kafkaConsumer;
+        this.msgConsumer = msgConsumer;
         this.maxDelayMillis = maxDelayMillis;
         this.timer = timer.register(registry);
     }

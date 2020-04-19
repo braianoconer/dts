@@ -1,7 +1,7 @@
 package com.playground.observability.common.pubsub.kafka;
 
 import brave.kafka.clients.KafkaTracing;
-import com.playground.observability.common.pubsub.Publisher;
+import com.playground.observability.common.pubsub.MsgPublisher;
 import com.playground.observability.common.pubsub.kafka.model.KafkaTopicsBean;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -9,8 +9,8 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Service
-public class GenericKafkaPublisher implements Publisher<Long, String> {
+//@Service
+public class GenericKafkaMsgPublisher implements MsgPublisher<Long, String> {
 
     private final Producer<Long, String> kafkaProducer;
 
@@ -19,7 +19,7 @@ public class GenericKafkaPublisher implements Publisher<Long, String> {
     private long counter = 0;
 
     @Autowired
-    public GenericKafkaPublisher(KafkaProducer<Long, String> kafkaProducer, KafkaTopicsBean topics, KafkaTracing tracingProducer) {
+    public GenericKafkaMsgPublisher(KafkaProducer<Long, String> kafkaProducer, KafkaTopicsBean topics, KafkaTracing tracingProducer) {
         this.kafkaProducer = tracingProducer.producer(kafkaProducer);
         this.topics = topics;
     }
@@ -32,4 +32,8 @@ public class GenericKafkaPublisher implements Publisher<Long, String> {
         return key;
     }
 
+    @Override
+    public void close() throws Exception {
+        kafkaProducer.close();
+    }
 }

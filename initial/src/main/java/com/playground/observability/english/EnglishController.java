@@ -1,7 +1,7 @@
 package com.playground.observability.english;
 
 import com.playground.observability.common.InputWords;
-import com.playground.observability.common.pubsub.Publisher;
+import com.playground.observability.common.pubsub.MsgPublisher;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import org.slf4j.Logger;
@@ -40,7 +40,7 @@ public class EnglishController {
             .maximumExpectedValue(Duration.ofMillis(SLEEP_DELAY + 100));
 
 	@Autowired
-    public EnglishController(Publisher<Long, String> publisher, MeterRegistry registry) {
+    public EnglishController(MsgPublisher<Long, String> publisher, MeterRegistry registry) {
 	    this.producerRunner = new ProducerRunner(publisher, timer.register(registry));
     }
 
@@ -70,7 +70,7 @@ public class EnglishController {
 
     private class ProducerRunner implements Runnable {
 
-        private final Publisher<Long, String> publisher;
+        private final MsgPublisher<Long, String> publisher;
 
         private final Timer timer;
 
@@ -80,7 +80,7 @@ public class EnglishController {
 
         private final List<String> inputs = InputWords.getEnglishWords();
 
-        public ProducerRunner(Publisher<Long, String> publisher, Timer timer) {
+        public ProducerRunner(MsgPublisher<Long, String> publisher, Timer timer) {
             this.publisher = publisher;
             this.timer = timer;
         }
