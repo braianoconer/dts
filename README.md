@@ -3,6 +3,12 @@
 This project is intended to be used as a PoC for Observability principles. If you want to read more about 
 the concept of observability in distributed systems see the [References] section below.
 
+## DTS - High Level Architecture
+
+The system is composed of 5 services devoted to wonderful task of translating completely useless and irrelevant English sentences.
+
+![DTS Architecture](/images/DTS-Arch.png)
+
 ## How to run the project using docker-compose
 
 Install [Docker](https://www.docker.com/) v19.0+ in your machine and simply run 
