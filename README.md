@@ -71,8 +71,8 @@ The ports for each of these services can be modified in the ``docker-compose.yml
 
 
 ### Distributed Tracing
-[The Open Tracing project](https://opentracing.io/)
+* [The Open Tracing project](https://opentracing.io/)
 
-[Zipkin IO](https://zipkin.io/)
+* [Zipkin IO](https://zipkin.io/)
 
-[Spring Cloud Sleuth](https://spring.io/projects/spring-cloud-sleuth)
+* [Spring Cloud Sleuth](https://spring.io/projects/spring-cloud-sleuth)
