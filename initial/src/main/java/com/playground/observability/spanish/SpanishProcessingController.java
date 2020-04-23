@@ -22,7 +22,7 @@ public class SpanishProcessingController extends GenericProcessing {
 
     private static final long MAX_DELAY_MILLIS = 500;
 
-    private static final Timer.Builder timer = Timer.builder("spanish_requests_latency_seconds")
+    private static final Timer.Builder timer = Timer.builder("spanish_requests_latency")
             .publishPercentiles(0.5, 0.95, 0.99, 0.999)
             .publishPercentileHistogram()
             .sla(Duration.ofMillis(MAX_DELAY_MILLIS))

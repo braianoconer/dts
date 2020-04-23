@@ -5,7 +5,6 @@ import com.playground.observability.common.pubsub.MsgPublisher;
 import com.playground.observability.common.pubsub.kafka.ConsumerRunner;
 import com.playground.observability.common.pubsub.kafka.GenericProcessing;
 import com.playground.observability.common.translator.TranslatorClientConfig;
-import com.playground.observability.italian.ItalianProcessingController;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import org.slf4j.Logger;

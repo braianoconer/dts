@@ -1,6 +1,5 @@
 package com.playground.observability.german;
 
-import brave.http.HttpTracing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -21,9 +20,8 @@ public class GermanProcessingLauncher {
     }
 
     @Bean
-    public RestTemplate restTemplate(RestTemplateBuilder builder, HttpTracing tracing) {
-        LOGGER.info("Creating RestTemplate instance with tracing directed to %s", tracing.serverName());
-        return builder
-                .build();
+    public RestTemplate restTemplate(RestTemplateBuilder builder) {
+        LOGGER.info("Creating RestTemplate instance for German translations...");
+        return builder.build();
     }
 }

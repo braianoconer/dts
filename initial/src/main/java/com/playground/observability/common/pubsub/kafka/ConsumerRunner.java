@@ -1,13 +1,17 @@
 package com.playground.observability.common.pubsub.kafka;
 
+import brave.Response;
 import com.playground.observability.common.pubsub.MsgConsumer;
 import com.playground.observability.common.translator.TranslatorClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.function.Consumer;
 
 public class ConsumerRunner implements Runnable {
@@ -35,11 +39,17 @@ public class ConsumerRunner implements Runnable {
     @Override
     public void run() {
         msgConsumer.start(record -> {
+            Instant start = Instant.now();
             String value = record.value();
             String word = extractWord(value);
             String uri = translatorClientConfig.getTranslatorAddress() + "?target=" + translatorClientConfig.getTargetLanguage() + "&word=" + word;
-            String translation =restTemplate.getForObject(uri, String.class);
-            sendingFunction.accept(value + translation + "-");
+            ResponseEntity<String> response = restTemplate.getForEntity(uri, String.class);
+            if (response.getStatusCode().equals(HttpStatus.OK)) {
+                sendingFunction.accept(value + response.getBody() + "-");
+            } else {
+                LOGGER.error("Received a translation error for word {}. Error: {}", value, response.getBody());
+            }
+
         });
 
     }

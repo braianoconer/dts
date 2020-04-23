@@ -1,6 +1,5 @@
 package com.playground.observability.spanish;
 
-import brave.http.HttpTracing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -21,8 +20,8 @@ public class SpanishProcessingLauncher {
     }
 
     @Bean
-    public RestTemplate restTemplate(RestTemplateBuilder builder, HttpTracing tracing) {
-        return builder
-                .build();
+    public RestTemplate restTemplate(RestTemplateBuilder builder) {
+        LOGGER.info("Creating RestTemplate instance for Spanish translations...");
+        return builder.build();
     }
 }
