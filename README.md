@@ -1,7 +1,7 @@
 # Dummy Translation Service - DTS
 
 This project is intended to be used as a PoC for Observability principles. If you want to read more about 
-the concept of observability in distributed systems see the References section below.
+the concept of observability in distributed systems see the [References] section below.
 
 ## How to run the project using docker-compose
 
@@ -26,10 +26,38 @@ You can also use the convenience ``buildAll.sh`` script to rebuild all the image
 
 TBD
 
+## Using the Dummy Translator Service
+
+Once the system is up and all its services are up and running you can trigger the translation process by sending a GET request to 
+the English initiator service. For example:
+
+    http://localhost:8091/start?batch=10 
+   
+Will trigger the service to send batches of 10 messages (in English) to the __english__ kafka topic every second
+
+You can also stop the publishing using an equivalent GET request:
+
+    http://localhost:8091/stop    
+    
+## Observing the system
+
+This is the list of URLs for each of the services providing insights about how the system is behaving:
+
+Kibana: http://localhost:5604/
+
+Prometheus UI: http://localhost:9090/
+
+Grafana: http://localhost:3000/
+
+Zipkin UI: http://localhost:9411/
+
+The ports for each of these services can be modified in the ``docker-compose.yml`` file
+
+    
 ## References
 
 
-* [The three pillar of Observability](https://www.oreilly.com/library/view/distributed-systems-observability/9781492033431/ch04.html)
+* [The three pillars of Observability](https://www.oreilly.com/library/view/distributed-systems-observability/9781492033431/ch04.html)
   Distributed Systems Observability by Cindy Sridharan, O'Reilly
   
 ### Events logs
