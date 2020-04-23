@@ -131,7 +131,7 @@ services:
       - observability
 
   translator:
-    image: observability/translator
+    image: dts/translator
     expose:
       - "8085"
     ports:
@@ -148,7 +148,7 @@ services:
       - observability
 
   english:
-    image: observability/english
+    image: dts/english
     expose:
       - "8091"
     ports:
@@ -176,7 +176,7 @@ services:
       - observability
 
   spanishProcessor:
-    image: observability/spanish
+    image: dts/spanish
     expose:
       - "8082"
     ports:
@@ -207,7 +207,7 @@ services:
       - observability
 
   italianProcessor:
-    image: observability/italian
+    image: dts/italian
     expose:
       - "8083"
     ports:
@@ -238,7 +238,7 @@ services:
       - observability
 
   germanProcessor:
-    image: observability/german
+    image: dts/german
     expose:
       - "8084"
     ports:
