@@ -1,0 +1,25 @@
+filebeat.autodiscover:
+  providers:
+    - type: docker
+      templates:
+        - condition:
+            contains:
+              docker.container.name: project_trackr_*
+          config:
+            - type: docker
+              containers.ids:
+                - "${data.docker.container.id}"
+              exclude_lines: ["^\\s+[\\-`('.|_]"]
+
+filebeat.inputs:
+  - type: docker
+    containers:
+      path: "/var/lib/docker/containers"
+      stream: "all"
+      ids:
+        - "*"
+    processors:
+      - add_docker_metadata: ~
+
+output.elasticsearch:
+  hosts: ['elastic:9200']
