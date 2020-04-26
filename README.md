@@ -47,7 +47,7 @@ You can also stop the publishing using an equivalent GET request:
     
 ## Observing the system
 
-This is the list of URLs for each of the services providing insights about how the system is behaving:
+Once the DTS system is up and running you can use the list of URLs below to connect to each of the services providing insights about how the system is behaving:
 
 Kibana: http://localhost:5604/
 
