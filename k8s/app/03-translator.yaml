@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: translator
+  namespace: translator-app
+  labels:
+    app: translator-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: translator
+  template:
+    metadata:
+      labels:
+        app: translator
+    spec:
+      containers:
+        - name: translator
+          image: dts/translator
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8085
+          env:
+            - name: SERVER_PORT
+              value: "8085"
+            - name: spring.zipkin.baseUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: spring.zipkin.baseUrl
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: translator-app
+  name: translator
+  labels:
+    app: translator-app
+spec:
+  type: ClusterIP
+  selector:
+    app: translator
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8085
