@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: english
+  namespace: translator-app
+  labels:
+    app: translator-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: english
+  template:
+    metadata:
+      labels:
+        app: english
+    spec:
+      containers:
+        - name: english
+          image: dts/english
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8091
+          envFrom:
+            - configMapRef:
+                name: app-config
+          env:
+            - name: SERVER_PORT
+              value: "8091"
+
+            - name: kafka.client.id
+              value: english
+
+            - name: zipkin.service.name
+              value: EnglishInitiator
+
+            - name: kafka.consumer.group.id
+              value: notUsed
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: translator-app
+  name: english
+  labels:
+    app: translator-app
+spec:
+  type: ClusterIP
+  selector:
+    app: english
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8091

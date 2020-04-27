@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: italian
+  namespace: translator-app
+  labels:
+    app: translator-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: italian
+  template:
+    metadata:
+      labels:
+        app: italian
+    spec:
+      containers:
+        - name: italian
+          image: dts/italian
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8083
+          envFrom:
+            - configMapRef:
+                name: app-config
+          env:
+            - name: SERVER_PORT
+              value: "8083"
+
+            - name: kafka.client.id
+              value: italian
+
+            - name: zipkin.service.name
+              value: ItalianProcessor
+
+            - name: kafka.consumer.group.id
+              value: italian
+
+            - name: translator.target
+              value: IT
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: translator-app
+  name: italian
+  labels:
+    app: translator-app
+spec:
+  type: ClusterIP
+  selector:
+    app: italian
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8083
