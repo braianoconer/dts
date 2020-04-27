@@ -30,7 +30,7 @@ You can also use the convenience ``buildAll.sh`` script to rebuild all the image
 
 ## How to run the project in Kubernetes
 
-TBD
+Refer to the [k8s section](k8s/README.md)
 
 ## Using the Dummy Translator Service
 
