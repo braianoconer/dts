@@ -49,7 +49,7 @@ You can also stop the publishing using an equivalent GET request:
 
 Once the DTS system is up and running you can use the list of URLs below to connect to each of the services providing insights about how the system is behaving:
 
-Kibana: http://localhost:5604/
+Kibana: http://localhost:5601/
 
 Prometheus UI: http://localhost:9090/
 
@@ -59,6 +59,22 @@ Zipkin UI: http://localhost:9411/
 
 The ports for each of these services can be modified in the ``docker-compose.yml`` file
 
+Also, you can optionally start up Kafka console consumers as well in case you want to see the flow of messages coming in each Kafka topic.
+This can be done in two ways depending on whether you have a local installation of Kafka or prefer to use the dockerized version:
+
+1. Local Kafka
+    
+    
+    ${KAFKA_HOME}/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic $TOPIC
+
+So, for example, to consume messages from the Spanish topic:
+
+    ${KAFKA_HOME}/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic spanish    
+
+2. From the dockerized Kafka
+
+    
+    docker run -it --rm --network="observability-poc_observability" --link observability-poc_kafka_1 bitnami/kafka:2 /opt/bitnami/kafka/bin/kafka-console-consumer.sh --bootstrap-server kafka:29092 --topic spanish    
     
 ## References
 
