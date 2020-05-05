@@ -18,7 +18,8 @@ networks:
 
 services:
   zookeeper:
-    image: 'bitnami/zookeeper:3'
+    image: bitnami/zookeeper:3
+    container_name: zookeeper
     ports:
       - '2181:2181'
     volumes:
@@ -29,14 +30,15 @@ services:
       - observability
 
   kafka:
-    image: 'bitnami/kafka:2'
+    image: bitnami/kafka:2
+    container_name: kafka
     ports:
       - '9092:9092'
       - '29092:29092'
     volumes:
       - 'kafka_data:/bitnami'
     environment:
-      - KAFKA_CREATE_TOPICS="english:1:1,spanish:1:1,italian:1:1,german:1:1"
+      - KAFKA_CREATE_TOPICS="english:1:1,spanish:1:1,italian:1:1,german:1:1,mcsv:1:1"
       - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
       - ALLOW_PLAINTEXT_LISTENER=yes
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
@@ -97,6 +99,7 @@ services:
 
   zipkin:
     image: openzipkin/zipkin
+    container_name: zipkin
     environment:
       STORAGE_TYPE: mem
     ports:
@@ -106,6 +109,7 @@ services:
 
   prometheus:
     image: prom/prometheus
+    container_name: prometheus
     ports:
       - "9090:9090"
     expose:
@@ -119,6 +123,7 @@ services:
 
   grafana:
     image: grafana/grafana
+    container_name: grafana
     ports:
       - "3000:3000"
     volumes:
@@ -132,6 +137,7 @@ services:
 
   translator:
     image: dts/translator
+    container_name: translator
     expose:
       - "8085"
     ports:
@@ -149,6 +155,7 @@ services:
 
   english:
     image: dts/english
+    container_name: dts-english-initiator
     expose:
       - "8091"
     ports:
@@ -177,6 +184,7 @@ services:
 
   spanishProcessor:
     image: dts/spanish
+    container_name: dts-spanish-processor
     expose:
       - "8082"
     ports:
@@ -208,6 +216,7 @@ services:
 
   italianProcessor:
     image: dts/italian
+    container_name: dts-italian-processor
     expose:
       - "8083"
     ports:
@@ -239,6 +248,7 @@ services:
 
   germanProcessor:
     image: dts/german
+    container_name: dts-german-processor
     expose:
       - "8084"
     ports:
@@ -265,5 +275,41 @@ services:
       - filebeat
       - zipkin
       - translator
+    networks:
+      - observability
+
+
+  mcsv1:
+    image: mcsv1:latest
+    container_name: mcsv1
+    ports:
+      - "8666:8666"
+    volumes:
+      - logs_data:/logs
+    environment:
+      server.port: 8666
+      service.mcsv2-url: http://mcsv2:8667
+      spring.zipkin.baseUrl: ${ZIPKIN_HTTP_ENDPOINT_SHORT}
+      spring.kafka.bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+      zipkin.service.name: mcsv1
+    depends_on:
+      - kafka
+    networks:
+      - observability
+
+  mcsv2:
+    image: mcsv2:latest
+    container_name: mcsv2
+    ports:
+      - "8667:8667"
+    volumes:
+      - logs_data:/logs
+    environment:
+      server.port: 8667
+      spring.zipkin.baseUrl: ${ZIPKIN_HTTP_ENDPOINT_SHORT}
+      spring.kafka.bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+      zipkin.service.name: mcsv2
+    depends_on:
+      - kafka
     networks:
       - observability

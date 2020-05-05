@@ -14,6 +14,10 @@ The system is composed of 5 services devoted to wonderful task of translating co
 Install [Docker](https://www.docker.com/) v19.0+ in your machine and simply run 
 
     docker-compose up -d
+    
+Make sure that you have enough resources, otherwise services like 'elastic' or 'kafka' won't be able to start
+
+![Docker minimun resources](/images/dockerMinResources.png)
      
 ## How to recreate the docker images for each of the services   
 
@@ -37,7 +41,7 @@ Refer to the [k8s section](k8s/README.md)
 Once the system is up and all its services are up and running you can trigger the translation process by sending a GET request to 
 the English initiator service. For example:
 
-    http://localhost:8091/start?batch=10 
+    http://localhost:8091/start?size=10 
    
 Will trigger the service to send batches of 10 messages (in English) to the __english__ kafka topic every second
 
@@ -73,8 +77,7 @@ So, for example, to consume messages from the Spanish topic:
 
 2. From the dockerized Kafka
 
-    
-    docker run -it --rm --network="observability-poc_observability" --link observability-poc_kafka_1 bitnami/kafka:2 /opt/bitnami/kafka/bin/kafka-console-consumer.sh --bootstrap-server kafka:29092 --topic spanish    
+    docker run -it --rm --network="dts_observability" --link observability-poc_kafka_1 bitnami/kafka:2 /opt/bitnami/kafka/bin/kafka-console-consumer.sh --bootstrap-server kafka:29092 --topic spanish    
     
 ## References
 
