@@ -24,4 +24,5 @@ public class ItalianProcessingLauncher {
         LOGGER.info("Creating RestTemplate instance for Italian translations...");
         return builder.build();
     }
+
 }

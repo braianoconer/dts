@@ -47,12 +47,7 @@ public class SpringKafkaMsgConsumer implements MsgConsumer<Long, String> {
         if (isStarted.compareAndSet(false, true)) {
             LOGGER.info("Creating Kafka consumer to consume messages from topic %s", topics.getInTopic());
             ContainerProperties containerProps = new ContainerProperties(topics.getInTopic());
-            containerProps.setMessageListener(new MessageListener<Long, String>() {
-                @Override
-                public void onMessage(ConsumerRecord<Long, String> data) {
-                    consumerFunction.accept(data);
-                }
-            });
+            containerProps.setMessageListener((MessageListener<Long, String>) data -> consumerFunction.accept(data));
             container = new KafkaMessageListenerContainer<>(factory, containerProps);
             LOGGER.info("Starting Kafka Message Listener with properties %d", containerProps.toString());
             container.start();

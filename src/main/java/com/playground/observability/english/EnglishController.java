@@ -1,5 +1,6 @@
 package com.playground.observability.english;
 
+import brave.Tracer;
 import com.playground.observability.common.InputWords;
 import com.playground.observability.common.pubsub.MsgPublisher;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -7,9 +8,12 @@ import io.micrometer.core.instrument.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -32,6 +36,11 @@ public class EnglishController {
 
     private final ProducerRunner producerRunner;
 
+    private final RestTemplate restTemplate;
+
+    @Autowired
+    private Tracer tracer;
+
     private static final Timer.Builder timer = Timer.builder("english_requests_latency_seconds")
             .publishPercentiles(0.5, 0.95, 0.99, 0.999)
             .publishPercentileHistogram()
@@ -39,9 +48,29 @@ public class EnglishController {
             .minimumExpectedValue(Duration.ofMillis(1))
             .maximumExpectedValue(Duration.ofMillis(SLEEP_DELAY + 100));
 
-	@Autowired
-    public EnglishController(MsgPublisher<Long, String> publisher, MeterRegistry registry) {
+    public EnglishController(MsgPublisher<Long, String> publisher, MeterRegistry registry, RestTemplate restTemplate) {
 	    this.producerRunner = new ProducerRunner(publisher, timer.register(registry));
+	    this.restTemplate = restTemplate;
+    }
+
+    @GetMapping("/test")
+    public void test() {
+
+        LOGGER.warn("---------");
+        printTrace();
+        LOGGER.warn("---------");
+
+        String uri = "http://translator:8085/translate?target=ES&word=hello";
+        ResponseEntity<String> response = restTemplate.getForEntity(uri, String.class);
+        if (response.getStatusCode().equals(HttpStatus.OK)) {
+            LOGGER.info("OK {}", response.getBody());
+        }
+    }
+
+    private void printTrace () {
+        String traceId = tracer.currentSpan().context().traceIdString();
+        String spanId = tracer.currentSpan().context().spanIdString();
+        LOGGER.info("--- Tracer ---  traceId: {} & spanId: {}", traceId, spanId);
     }
 
     @GetMapping("/start")

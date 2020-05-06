@@ -175,6 +175,7 @@ services:
       zipkin.service.name: EnglishInitiator
       kafka.consumer.group.id: notUsed
       kafka.acks: ${KAFKA_ACKS}
+      spring.sleuth.messaging.kafka.enabled: "true"
     depends_on:
       - kafka
       - filebeat
@@ -206,6 +207,7 @@ services:
       zipkin.service.name: SpanishProcessor
       translator.url: ${TRANSLATOR_URL}
       translator.target: ES
+      spring.sleuth.messaging.kafka.enabled: "true"
     depends_on:
       - kafka
       - filebeat
@@ -238,6 +240,7 @@ services:
       zipkin.service.name: ItalianProcessor
       translator.url: ${TRANSLATOR_URL}
       translator.target: IT
+      spring.sleuth.messaging.kafka.enabled: "true"
     depends_on:
       - kafka
       - filebeat
@@ -270,6 +273,7 @@ services:
       zipkin.service.name: GermanProcessor
       translator.url: ${TRANSLATOR_URL}
       translator.target: DE
+      spring.sleuth.messaging.kafka.enabled: "true"
     depends_on:
       - kafka
       - filebeat
